@@ -4,9 +4,11 @@ use strict;
 use warnings;
 
 use Config::Tiny;
+use File::HomeDir;
 
 our $VERSION = '0.5';
 our $CONFIG  = {};
+our $FILE    = {};
 
 sub import {
   my $class   = shift;
@@ -24,23 +26,32 @@ sub import {
   
   {
     no strict;
+
     *{$pkg."::config"} = sub {
       return $CONFIG{$pkg} if $CONFIG{$pkg};
-      if (-e "." . $cfgfile) {
-        return $CONFIG{$pkg} = Config::Tiny->read("." . $cfgfile);
-      } elsif (-e "./etc/" . $cfgfile) {
-        return $CONFIG{$pkg} = Config::Tiny->read("./etc/" . $cfgfile);  
-      } elsif (-e "/etc/" . $cfgfile) {
-        return $CONFIG{$pkg} = Config::Tiny->read("/etc/" . $cfgfile);
-      } else {
-        return $CONFIG{$pkg} = {};
+      my @paths = (
+        File::Spec->catfile( File::HomeDir->my_home, ".$cfgfile" ),
+        ".$cfgfile",
+        "./etc/$cfgfile",
+        "/etc/$cfgfile"
+      );
+      foreach my $path (@paths) {
+        if (-e $path) {
+          $FILE{$pkg} = $path;
+          return $CONFIG{$pkg} = Config::Tiny->read( $path );
+        }
       }
+      return {};
     };    
+
+    *{$pkg.'::configfile'} = sub {
+      return $FILE{$pkg};
+    };
     
     *{$pkg."::pkgconfig"} = sub {
       my ($package, $filename, $line) = caller;
       return $pkg->config->{$package} || {};
-    }
+    };
   }
   
 }
@@ -101,6 +112,8 @@ structure under the C<My::Test::Class> key.
 Application config looks, in this order, for a config file:
 
 =over 4
+
+=item ~/.<filename>
 
 =item ./.<filename>
 
