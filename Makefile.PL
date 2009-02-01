@@ -4,5 +4,6 @@ WriteMakefile(
   VERSION_FROM => 'lib/Application/Config.pm',
   PREREQ_PM => {
     'Config::Tiny' => 0,
+    'File::HomeDir' => 0,
   }
 );
