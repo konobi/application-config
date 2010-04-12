@@ -159,8 +159,10 @@ L<Config::Tiny>
 
 James A. Duncan <james@reasonablysmart.com>
 
+Contributions from Scott McWhirter <smcwhirter |AT| joyent {DOT} com>
+
 =head1 LICENSE
 
-This module is released under the same terms as Perl.
+This module is released under the MIT license
 
 =cut

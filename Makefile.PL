@@ -1,9 +1,11 @@
-use ExtUtils::MakeMaker;
-WriteMakefile(
-  NAME => 'Application::Config',
-  VERSION_FROM => 'lib/Application/Config.pm',
-  PREREQ_PM => {
-    'Config::Tiny' => 0,
-    'File::HomeDir' => 0,
-  }
-);
+use inc::Module::Install;
+
+name 'Application-Config';
+all_from 'lib/Application/Config.pm';
+license 'MIT';
+
+requires 'Config::Tiny' => 0;
+requires 'File::HomeDir' => 0;
+
+auto_install;
+WriteAll;
